@@ -1,62 +1,43 @@
 #include "logger_base.hpp"
 
 namespace logger {
-	Ptr Create(sink::Ptr sink){
-		auto res = Base::Create();
+	LoggerPtr CreateLogger(ISinkPtr sink){
+		auto res = Logger::Create();
 		
 		res->AddSink(sink);
 
 		return res;
 	}
 
-    Ptr Base::Create() {
-      class MakeSharedEnabler: public Base {};
+    LoggerPtr Logger::Create() {
+      class MakeSharedEnabler: public Logger {};
 
       auto res = std::make_shared < MakeSharedEnabler > ();
 	  
       return res;
     }
-    Ptr Base::GetPtr() {
+	LoggerPtr Logger::GetPtr() {
       return this->shared_from_this();
     }
-    ConstPtr Base::GetPtr() const {
-      return const_cast < Base * > (this)->GetPtr();
+    ConstLoggerPtr Logger::GetPtr() const {
+      return const_cast<Logger*>(this)->GetPtr();
     }	
 
-	void Base::Log(const Severity& severity, const String& header, const String& message) {
-		auto event = record::Create(severity, header, message);	
+	void Logger::Log(const Severity& severity, const String& header, const String& message) const {
+		auto record = CreateRecord(severity, header, message);	
 		
-		for(auto it: sinks_){
-			it->Write(event);
+		for(auto& it: sinks_){
+			it->Write(record);
 		}
 	}
-	void Base::AddSink(sink::Ptr sink) {
+	void Logger::AddSink(ISinkPtr sink) {
 		if(sink != nullptr) {
 			sinks_.push_back(sink);
 		}
 	}
 	
-	Ptr GetDefault(){
-		static auto res = Create(sink::GetDefault());
+	ILoggerPtr GetDefaultLogger(){
+		static auto res = CreateLogger(GetDefaultSink());
 		return res;
 	}
-	
-
-	
-	/*void Trace(const String& header, const String& message) {
-		GetDefault()->Log(logger::Severity::Trace, header, message);
-	};
-	void Warning(const String& header, const String& message) {
-		GetDefault()->Log(logger::Severity::Warning, header, message);
-	};
-	void Debug(const String& header, const String& message) {
-		GetDefault()->Log(logger::Severity::Debug, header, message);
-	};
-	void Error(const String& header, const String& message) {
-		GetDefault()->Log(logger::Severity::Error, header, message);
-	};	
-	void Fatal(const String& header, const String& message) {
-		GetDefault()->Log(logger::Severity::Fatal, header, message);
-	};	*/
-
 }

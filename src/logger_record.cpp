@@ -1,65 +1,61 @@
 #include "logger_record.hpp"
 
 namespace logger {
-  namespace record {
-	  
-    Ptr Create(const Severity& severity, const String& header, const String& message) {
-      auto res = Base::Create(severity, header, message);
+	RecordPtr CreateRecord(const Severity& severity, const String& header, const String& message) {
+		auto res = Record::Create(severity, header, message);
 
-      return res;
-    }
+		return res;
+	}
 
-    Ptr Base::Create(const Severity& severity, const String& header, const String& message) {
-      class MakeSharedEnabler: public Base {};
+	RecordPtr Record::Create(const Severity& severity, const String& header, const String& message) {
+		class MakeSharedEnabler : public Record {};
 
-      auto res = std::make_shared < MakeSharedEnabler > ();
+		auto res = std::make_shared < MakeSharedEnabler >();
 
-	  res->SetDate();	  
-	  res->SetHeader(header);
-	  res->SetSeverity(severity);  
-	  res->SetMessage(message);
-	  res->SetThreadID();	  
-	  
-      return res;
-    }
-    Ptr Base::GetPtr() {
-      return this->shared_from_this();
-    }
-    ConstPtr Base::GetPtr() const {
-      return const_cast < Base * > (this)->GetPtr();
-    }
+		res->SetDate();
+		res->SetHeader(header);
+		res->SetSeverity(severity);
+		res->SetMessage(message);
+		res->SetThreadID();
 
-	const String& Base::GetHeader() const{
+		return res;
+	}
+	RecordPtr Record::GetPtr() {
+		return this->shared_from_this();
+	}
+	ConstRecordPtr Record::GetPtr() const {
+		return const_cast <Record*> (this)->GetPtr();
+	}
+
+	const String& Record::GetHeader() const {
 		return header_;
 	}
-	const Date& Base::GetDate() const{
+	const Date& Record::GetDate() const {
 		return date_;
 	}
-	const Severity& Base::GetSeverity() const{
+	const Severity& Record::GetSeverity() const {
 		return severity_;
 	}
-	const String& Base::GetMessage() const{
+	const String& Record::GetMessage() const {
 		return message_;
 	}
-	const ThreadID& Base::GetThreadID() const{
+	const ThreadID& Record::GetThreadID() const {
 		return threadID_;
 	}
 
-	void Base::SetHeader(const String& header){
+	void Record::SetHeader(const String& header) {
 		header_ = header;
-	}	
-	void Base::SetDate(){
+	}
+	void Record::SetDate() {
 		date_ = utils::GetDate();
 	}
-	void Base::SetSeverity(const Severity& severity){
+	void Record::SetSeverity(const Severity& severity) {
 		severity_ = severity;
 	}
-	void Base::SetMessage(const String& message){
+	void Record::SetMessage(const String& message) {
 		message_ = message;
 	}
-	void Base::SetThreadID(){
+	void Record::SetThreadID() {
 		threadID_ = std::this_thread::get_id();
 	}
- 
-  }
 }

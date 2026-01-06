@@ -8,46 +8,56 @@
 
 namespace logger
 {
-	Ptr Create(sink::Ptr sink);
+	class ILogger {
+	public:
+		virtual ~ILogger() = default;
+
+		virtual void Log(const Severity& severity, const String& header, const String& message) const = 0;
+		virtual void AddSink(ISinkPtr sink) = 0;
+	};
+
+	LoggerPtr CreateLogger(ISinkPtr sink);
 		
-	class Base : public std::enable_shared_from_this<Base> 
+	class Logger : public ILogger, public std::enable_shared_from_this<Logger>
 	{
 	public:
-		virtual ~Base() = default;
+		virtual ~Logger() = default;
 
-		static Ptr Create();
-		Ptr GetPtr();
-		ConstPtr GetPtr() const;
+		static LoggerPtr Create();
+		LoggerPtr GetPtr();
+		ConstLoggerPtr GetPtr() const;
 			
-		void Log(const Severity& severity, const String& header, const String& message);
-		void AddSink(sink::Ptr sink);
+		void Log(const Severity& severity, const String& header, const String& message) const override;
+		void AddSink(ISinkPtr sink) override;
 			
 	protected:
-		Base() = default;
+		Logger() = default;
 
 		Sinks sinks_;
 	};
 		
-	Ptr GetDefault();	
+	ILoggerPtr GetDefaultLogger();
 
-	template<typename... Args> void Info(const String& header, const String& message, Args... args) {
-		GetDefault()->Log(logger::Severity::Info, header, utils::string::Format(message, args...));
+	template<typename... Args> void Info(const String& header, const String& message) {
+		GetDefaultLogger()->Log(severity_info, header, message);
 	};	
-	template<typename... Args> void Trace(const String& header, const String& message, Args... args) {
-		GetDefault()->Log(logger::Severity::Trace, header, utils::string::Format(message, args...));
+	template<typename... Args> void Trace(const String& header, const String& message) {
+		GetDefaultLogger()->Log(severity_trace, header, message);
 	};	
 	template<typename... Args> void Warning(const String& header, const String& message, Args... args) {
-		GetDefault()->Log(logger::Severity::Warning, header, utils::string::Format(message, args...));
+		GetDefaultLogger()->Log(severity_warning, header, message);
 	};
 	template<typename... Args> void Debug(const String& header, const String& message, Args... args) {
-		GetDefault()->Log(logger::Severity::Debug, header, utils::string::Format(message, args...));
+		GetDefaultLogger()->Log(severity_debug, header, message);
 	};	
 	template<typename... Args> void Error(const String& header, const String& message, Args... args) {
-		GetDefault()->Log(logger::Severity::Error, header, utils::string::Format(message, args...));
+		GetDefaultLogger()->Log(severity_error, header, message);
 	};	
-		template<typename... Args> void Fatal(const String& header, const String& message, Args... args) {
-		GetDefault()->Log(logger::Severity::Fatal, header, utils::string::Format(message, args...));
+	template<typename... Args> void Fatal(const String& header, const String& message, Args... args) {
+		GetDefaultLogger()->Log(severity_fatal, header, message);
 	};	
 }
 
 #endif
+
+//utils::string::Format(message, args...)

@@ -5,41 +5,36 @@
 #include <mutex>
 
 namespace logger{
-	namespace sink{
+	class ISink {
+	public:
+		virtual ~ISink() = default;
 
-		class Base{
-		public:
-			virtual ~Base() = default;
+		virtual void Write(IRecordPtr record) = 0;
+		virtual void SetFormatter(IFormatterPtr formatter) = 0;
+	};
 
-			virtual void Write(record::ConstPtr record) = 0;
-			virtual void SetFormatter(formatter::ConstPtr formatter) = 0;
-		protected:
-			Base() = default;		
-		};
+	StdOutSinkPtr CreateStdOutSink(IFormatterPtr formatter);
 
-		StdOutPtr CreateStdOut(formatter::ConstPtr formatter);
-		
-		class StdOut : public Base, public std::enable_shared_from_this<StdOut> {
-		public:
-			virtual ~StdOut() = default;
-			
-			static StdOutPtr Create();
-			StdOutPtr GetPtr();
-			ConstStdOutPtr GetPtr() const;
+	class StdOutSink : public ISink, public std::enable_shared_from_this<StdOutSink> {
+	public:
+		virtual ~StdOutSink() = default;
 
-			void Write(record::ConstPtr record) override;
-			void SetFormatter(formatter::ConstPtr formatter) override;
-			
-		protected:
-			StdOut() = default;
-			
-			formatter::ConstPtr formatter_{nullptr};
-			
-			static std::mutex mutex_;
-		};
-		
-		Ptr GetDefault();		
-	}
+		static StdOutSinkPtr Create();
+		StdOutSinkPtr GetPtr();
+		ConstStdOutSinkPtr GetPtr() const;
+
+		void Write(IRecordPtr record) override;
+		void SetFormatter(IFormatterPtr formatter) override;
+
+	protected:
+		StdOutSink() = default;
+
+		IFormatterPtr formatter_{ nullptr };
+
+		static std::mutex mutex_;
+	};
+
+	ISinkPtr GetDefaultSink();
 }
 
 #endif

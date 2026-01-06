@@ -2,49 +2,39 @@
 #define LOGGER_FORMATTER_HPP_
 
 #include "logger_types.hpp"
-
 #include <vector>
 
 namespace logger{
-	namespace formatter{
-		
-		static const std::vector<String> severityText{ "INFO", "TRACE", "WARN", "DEBUG", "ERROR", "FATAL" };
-		
-		class Base{
-		public:
-			virtual ~Base() = default;
+	static const std::vector<String> severityText{ "INFO", "TRACE", "WARN", "DEBUG", "ERROR", "FATAL" };
 
-			virtual String operator()(record::ConstPtr record) const = 0;	
+	class IFormatter {
+	public:
+		virtual ~IFormatter() = default;
 
-		protected:
-			Base() = default;		
-		};
+		virtual String operator()(IRecordPtr record) const = 0;
+	};
 
-		BasicPtr CreateBasic();	
+	FormatterPtr CreateFormatter();
 
-		class Basic : public Base, public std::enable_shared_from_this<Basic> {
-		public:
-			virtual ~Basic() = default;
-			
-			static BasicPtr Create();
-			BasicPtr GetPtr();
-			ConstBasicPtr GetPtr() const;
+	class Formatter : public IFormatter, public std::enable_shared_from_this<Formatter> {
+	public:
+		virtual ~Formatter() = default;
 
-			String operator()(record::ConstPtr record) const override;			
-			
-		protected:
-			Basic() = default;
-			
-			String FormatDate(const Date& date) const;
-			String FormatHeader(const String& header) const;
-			String FormatSeverity(const Severity& severity) const;
-			String FormatMessage(const String& message) const;
-			
-			String separator_{" "};		
-		};
-		
-		Ptr GetDefault();
-	}
+		static FormatterPtr Create();
+		FormatterPtr GetPtr();
+		ConstFormatterPtr GetPtr() const;
+
+		String operator()(IRecordPtr record) const override;
+
+	protected:
+		Formatter() = default;
+
+		String FormatDate(const Date& date) const;
+		String FormatHeader(const String& header) const;
+		String FormatSeverity(const Severity& severity) const;
+	};
+
+	IFormatterPtr GetDefaultFormatter();
 }
 
 #endif

@@ -3,50 +3,47 @@
 #include "logger_record.hpp"
 
 namespace logger {
-  namespace sink {
-	
-	std::mutex StdOut::mutex_{};	
-	
-	StdOutPtr CreateStdOut(formatter::ConstPtr formatter){
-		auto res = StdOut::Create();
-		
+	std::mutex StdOutSink::mutex_{};
+
+	StdOutSinkPtr CreateStdOutSink(IFormatterPtr formatter) {
+		auto res = StdOutSink::Create();
+
 		res->SetFormatter(formatter);
 
 		return res;
 	}
 
-    StdOutPtr StdOut::Create() {
-      class MakeSharedEnabler: public StdOut {};
+	StdOutSinkPtr StdOutSink::Create() {
+		class MakeSharedEnabler : public StdOutSink {};
 
-      auto res = std::make_shared < MakeSharedEnabler > ();
-	  
-      return res;
-    }
-    StdOutPtr StdOut::GetPtr() {
-      return this->shared_from_this();
-    }
-    ConstStdOutPtr StdOut::GetPtr() const {
-      return const_cast < StdOut * > (this)->GetPtr();
-    }
-	
-	void StdOut::Write(record::ConstPtr record){
+		auto res = std::make_shared < MakeSharedEnabler >();
+
+		return res;
+	}
+	StdOutSinkPtr StdOutSink::GetPtr() {
+		return this->shared_from_this();
+	}
+	ConstStdOutSinkPtr StdOutSink::GetPtr() const {
+		return const_cast <StdOutSink*> (this)->GetPtr();
+	}
+
+	void StdOutSink::Write(IRecordPtr record) {
 		String output;
-		
+
 		std::lock_guard<std::mutex> lock(mutex_);
 		output = (*formatter_)(record);
-		std::cout << output << std::flush;
+
+		std::cout << output << "\n";
 	}
-	void StdOut::SetFormatter(formatter::ConstPtr formatter){		
-		if(formatter != nullptr){
+	void StdOutSink::SetFormatter(IFormatterPtr formatter) {
+		if (formatter != nullptr) {
 			std::lock_guard<std::mutex> lock(mutex_);
 			formatter_ = formatter;
 		}
 	}
-	
-	Ptr GetDefault(){
-		static auto res = CreateStdOut(formatter::GetDefault());
+
+	ISinkPtr GetDefaultSink() {
+		static auto res = CreateStdOutSink(GetDefaultFormatter());
 		return res;
 	}
-  
-  }
 }
