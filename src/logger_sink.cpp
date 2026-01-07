@@ -33,7 +33,7 @@ namespace logger {
 		std::lock_guard<std::mutex> lock(mutex_);
 		output = (*formatter_)(record);
 
-		std::cout << output << "\n";
+		std::cout << output;
 	}
 	void StdOutSink::SetFormatter(IFormatterPtr formatter) {
 		if (formatter != nullptr) {

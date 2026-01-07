@@ -23,10 +23,10 @@ namespace logger {
 	}
 
 	String Formatter::operator()(IRecordPtr record) const {
-		return utils::string::Format("{}{}{}: {}\n", FormatDate(record->GetDate()), FormatHeader(record->GetHeader()), FormatSeverity(record->GetSeverity()), record->GetMessage());
+		return utils::string::Format("{} {} {}: {}\n", FormatDate(record->GetDate()), FormatSeverity(record->GetSeverity()), FormatHeader(record->GetHeader()), record->GetMessage());
 	}
 	String Formatter::FormatDate(const Date& date) const {
-		return utils::string::Format("[{:4}/{:2}/{:2} {:2}:{:2}:{:06.3f}]", date.years, date.months, date.days, date.hours, date.minutes, date.seconds);
+		return utils::string::Format("({:04}-{:02}-{:02} {:02}:{:02}:{:06.3f})", date.years, date.months, date.days, date.hours, date.minutes, date.seconds);
 	}
 	String Formatter::FormatHeader(const String& header) const {
 		return utils::string::Format("[{}]", header);
