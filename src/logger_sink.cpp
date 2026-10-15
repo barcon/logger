@@ -2,8 +2,9 @@
 #include "logger_formatter.hpp"
 #include "logger_record.hpp"
 
+#include <syncstream>
+
 namespace logger {
-	std::mutex StdOutSink::mutex_{};
 
 	StdOutSinkPtr CreateStdOutSink(IFormatterPtr formatter) {
 		auto res = StdOutSink::Create();
@@ -28,18 +29,15 @@ namespace logger {
 	}
 
 	void StdOutSink::Write(IRecordPtr record) {
-		String output;
-
-		std::lock_guard<std::mutex> lock(mutex_);
-		output = (*formatter_)(record);
-
-		std::cout << output;
+		std::osyncstream(std::cout) << (*formatter_)(record);
 	}
 	void StdOutSink::SetFormatter(IFormatterPtr formatter) {
-		if (formatter != nullptr) {
-			std::lock_guard<std::mutex> lock(mutex_);
-			formatter_ = formatter;
+		if(!formatter)
+		{
+			throw std::runtime_error("Formatter is nullptr");
 		}
+
+		formatter_ = formatter;
 	}
 
 	ISinkPtr GetDefaultSink() {

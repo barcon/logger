@@ -2,7 +2,6 @@
 #define LOGGER_SINK_HPP_
 
 #include "logger_types.hpp"
-#include <mutex>
 
 namespace logger{
 	class ISink {
@@ -30,8 +29,6 @@ namespace logger{
 		StdOutSink() = default;
 
 		IFormatterPtr formatter_{ nullptr };
-
-		static std::mutex mutex_;
 	};
 
 	ISinkPtr GetDefaultSink();
