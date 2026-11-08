@@ -24,9 +24,6 @@ namespace logger {
 	StdOutSinkPtr StdOutSink::GetPtr() {
 		return this->shared_from_this();
 	}
-	ConstStdOutSinkPtr StdOutSink::GetPtr() const {
-		return const_cast <StdOutSink*> (this)->GetPtr();
-	}
 
 	void StdOutSink::Write(IRecordPtr record) {
 		std::osyncstream(std::cout) << (*formatter_)(record);

@@ -23,7 +23,6 @@ namespace logger{
 
 		static RecordPtr Create(const Severity& severity, const String& header, const String& message);
 		RecordPtr GetPtr();
-		ConstRecordPtr GetPtr() const;
 
 		const String& GetHeader() const override;
 		const Date& GetDate() const override;

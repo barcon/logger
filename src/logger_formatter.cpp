@@ -18,9 +18,6 @@ namespace logger {
 	FormatterPtr Formatter::GetPtr() {
 		return this->shared_from_this();
 	}
-	ConstFormatterPtr Formatter::GetPtr() const {
-		return const_cast<Formatter*>(this)->GetPtr();
-	}
 
 	String Formatter::operator()(IRecordPtr record) const {
 		return utils::string::Format("{} {} {}: {}\n", FormatDate(record->GetDate()), FormatSeverity(record->GetSeverity()), FormatHeader(record->GetHeader()), record->GetMessage());

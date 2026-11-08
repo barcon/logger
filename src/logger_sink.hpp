@@ -20,7 +20,6 @@ namespace logger{
 
 		static StdOutSinkPtr Create();
 		StdOutSinkPtr GetPtr();
-		ConstStdOutSinkPtr GetPtr() const;
 
 		void Write(IRecordPtr record) override;
 		void SetFormatter(IFormatterPtr formatter) override;

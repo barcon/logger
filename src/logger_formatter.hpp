@@ -22,7 +22,6 @@ namespace logger{
 
 		static FormatterPtr Create();
 		FormatterPtr GetPtr();
-		ConstFormatterPtr GetPtr() const;
 
 		String operator()(IRecordPtr record) const override;
 

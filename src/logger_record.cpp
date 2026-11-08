@@ -23,9 +23,6 @@ namespace logger {
 	RecordPtr Record::GetPtr() {
 		return this->shared_from_this();
 	}
-	ConstRecordPtr Record::GetPtr() const {
-		return const_cast <Record*> (this)->GetPtr();
-	}
 
 	const String& Record::GetHeader() const {
 		return header_;

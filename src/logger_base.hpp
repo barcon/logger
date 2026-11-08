@@ -25,7 +25,6 @@ namespace logger
 
 		static LoggerPtr Create();
 		LoggerPtr GetPtr();
-		ConstLoggerPtr GetPtr() const;
 			
 		void Log(const Severity& severity, const String& header, const String& message) const override;
 		void AddSink(ISinkPtr sink) override;
